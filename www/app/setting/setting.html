@@ -1,0 +1,53 @@
+
+<ion-view title="系統" ng-controller="SettingCtrl">
+
+  <ion-nav-bar class="bg-gold-light">
+    <ion-nav-back-button class="button button-header">
+      <i class="ion-ios-arrow-back"></i>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  
+  <ion-content padding="false" class=" ion-content-bg">
+  
+  <!--
+    <ul class="list list-inset">
+      <li class="item">預設搜尋地區：{{user_info.active_area}}</li>
+      <li class="item">預設搜尋時間：{{user_info.active_time}}</li>
+      <li class="item">電郵：{{user_info.email}}</li>
+      <li class="item">接收訊息提示：{{user_info.notice_rec}}</li>
+    </ul>
+   -->
+    
+    <div class="list list-inset">
+      <li class="item item-divider item-header">用戶系統資料</li>
+      <li class="item">註冊日期：{{user_info.reg_date}}</li>
+      <li class="item">最後登入：{{user_info.last_login_suc}}</li>
+      <li class="item">登入次數：{{user_info.login_cnt}}</li>
+      <!--
+      <li class="item">發起活動次數：{{user_info.lead_cnt}}</li>
+      <li class="item">參與活動次數：{{user_info.join_cnt}}</li>
+      -->
+    </div>
+
+    <ul class="list list-inset">
+      <li class="item item-divider item-header">用戶權限</li>
+      <li class="item">用戶等級：{{user_info.user_lv}}</li>
+      <li class="item">用戶績分：{{user_info.user_points}}</li>
+      <li class="item">發起活動限制：最多同時發起{{user_info.max_lead_no}}個活動</li>
+      <li class="item">參與活動限制：最多同時參與{{user_info.max_join_no}}個活動</li>
+      <li class="item">關注活動限制：最多同時關注{{user_info.max_follow_no}}個活動</li>
+      <li class="item">邀請信限制：最多同時發出{{user_info.max_invite_no}}封邀請信</li>
+      <li class="item">發言權等級：{{user_info.speech_lv}}</li>
+    </ul>
+    
+  
+    <ul class="list list-inset">
+      <li class="item item-divider item-header">本系統</li>
+      <li class="item">此版本：{{APP_VERSION_CURRENT}}</li>
+      <li class="item">最新版本：{{APP_VERSION_LASTEST}}</li>
+    </ul>
+    
+    <button class="button button-block button-energized" ng-click="logout()">登出</button>
+  </ion-content>
+  
+</ion-view>

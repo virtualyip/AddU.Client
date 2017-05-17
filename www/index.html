@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>加埋您</title>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+  <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+  <script src="lib/ionic/js/ionic.bundle.js"></script>
+  
+  <script src="config.js"></script>
+  
+  <!-- get picture -->
+  <script src="js/ng-cordova.min.js"></script>
+  <!-- Needed for Cordova/PhoneGap (will be a 404 during development) -->
+  <script src="cordova.js"></script>
+  
+  <!-- Jquery -->
+  <script src="js/jquery-1.11.0.min.js"></script>
+  
+  <!-- Angular -->
+  <script src="lib/ionic/js/ionic-angular.min.js"></script>
+  <script src="lib/ionic/js/angular/angular-messages.min.js" type="text/javascript"></script> 
+  <script src="lib/ionic/js/angular/angular-messages.min.js.map" type="text/javascript"></script> 
+  
+  <!--Angular Calender -->
+  <script src="js/angular-pickadate.js"></script>
+  <link href="css/angular-pickadate.css" rel="stylesheet">
+  
+  <!--Ionic time picker -->
+  <link href="css/ionic-timepicker.css" rel="stylesheet">
+  <script src="js/ionic-templates.js"></script>
+  <script src="js/ionic-timepicker.js"></script>
+  
+  <!-- JS Crop Img -->
+  <script src="js/jr-crop.min.js"></script>
+  <link href="css/jr-crop.css" rel="stylesheet">
+  
+  <!-- my ajax Controller -->
+  <script src="js/ajax.js"></script>
+  
+  <!-- Ionic App defualt -->
+  <link href="css/style.css" rel="stylesheet">
+  <script src="app/app.js"></script>
+  <script src="app/controllers.js"></script>
+  <script src="app/services.js"></script>
+  
+  <!-- my app ctr -->
+  <script src="app/home/home.ctrl.js"></script>
+  <script src="app/editEvent/editEvent.ctrl.js"></script>
+  <script src="app/eventDetail/eventDetail.ctrl.js"></script>
+  <script src="app/eventList/eventList.ctrl.js"></script>
+  <script src="app/eventUser/eventUser.ctrl.js"></script>
+  <script src="app/login/login.ctrl.js"></script>
+  <!--<script src="app/registration/registration.ctrl.js"></script>-->
+  <script src="app/profile/profile.ctrl.js"></script>
+  <script src="app/chatroom/chatroom.ctrl.js"></script>
+  <script src="app/search/search.ctrl.js"></script>
+  <script src="app/setting/setting.ctrl.js"></script>
+  
+    <!-------------------------------
+              other module 
+              -------------------------------->
+              <!-- ng modal -->
+              <link href="css/ng-Modal.css" rel="stylesheet">
+              <script src="js/ng-Modal.js"></script>
+              <!-- 720K share btn -->
+              <script src="js/angular-socialshare.min.js"></script>
+              <!-- JS Toast -->
+              <link href="css/toastr.min.css" rel="stylesheet">
+              <script src="js/toastr.min.js"></script>
+              
+              <!--<script src="js/clipboard.js"></script>-->
+              <script>
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+                
+                ga('create', 'UA-61952934-1', 'auto');
+                ga('send', 'pageview');
+                
+              </script>
+            </head>
+            <body ng-app="come_rice" ng-controller="MainCtrl">
+              
+              <ion-nav-view animation="no-animation"></ion-nav-view>
+              
+              <script id="instruction.html" type="text/ng-template">
+                <div class="modal instruction-modal transparent" ng-click="closeInstructionModal()">
+                  <ion-pane class="transparent">
+                   <img ng-src="{{instructionSrc}}" class="fullscreen-image"/>
+                 </ion-pane>
+               </div>
+               <div class="ng-modal-overlay" style="z-index: 0;" ng-click="closeInstructionModal()"></div>
+             </script>
+             
+             <script id="share-popover.html" type="text/ng-template">
+              <ion-popover-view class="fit">
+                <ion-content scroll="false" ng-click="popover.hide()">
+                  <div class="item item-icon-left" ng-click="copyShareUrl(event)"><i class="icon ion-link"></i>復制連結</div>
+                  <div class="item item-icon-left" ng-click="shareAnywhere(event)"><i class="icon ion-share"></i>分享至...</div>
+                  <div class="item item-icon-left" ng-click="shareWhatsApp(event)"><i class="icon ion-social-whatsapp"></i>WhatsApp</div>
+                  <div class="item item-icon-left" ng-click="shareFacebook(event)"><i class="icon ion-social-facebook"></i>Facebook</div>
+                  <div class="item item-icon-left" ng-click="shareTwitter(event)"><i class="icon ion-social-twitter"></i>Twitter</div>
+                </ion-content>
+              </ion-popover-view>
+            </script>
+            
+            <script id="user-login.html" type="text/ng-template">
+              <div class="modal" ng-controller="LoginCtrl">
+                <ion-header-bar class="bar-header bg-gold-light">
+                  <button class="button button-light" ng-click="closeLogin()">＜關閉</button>
+                </ion-header-bar>
+                <!-- not logined -->
+                <ion-content class="ion-content-bg" scroll="true">
+                  <div class="full-content row">
+                    <div style="text-align: center; width: 80%; margin: 0 auto;">
+                      <div class="list list-inset ion-content-bg">
+                        
+                        <div ng-show="show_reg">
+                          <h2>請先改名</h2>
+                          <h4>登記屬於您的專有稱乎</h4>
+                          <div class="item item-input-inset">
+                            <label class="item-input-wrapper">
+                              <input type="text" name="login_id" ng-model="new_user_nickname" maxlength="12"
+                              placeholder="你的稱乎(2-12字節)" ng-disabled="submitting">
+                            </label>
+                            <button class="button button-small button-energized" 
+                            ng-click="createNewUser(new_user_nickname)"
+                            ng-disabled="submitting">
+                            <ion-spinner icon="ios" ng-show="submitting == true"></ion-spinner>
+                            <span ng-hide="submitting">立即登記</span>
+                          </button>
+                        </div>
+                        
+                        <form name="loginForm" novalidate ng-submit="loginSubmit(login)" method="post" ng-hide="reg_suc"> 
+                          
+                          <div><br>－己登記用戶－</div>
+                          <div class="list list-inset">
+                            <div class="item item-divider"><h3>己登記用戶</h3></div>
+                            <label class="item item-input">
+                              <span class="input-label"><h5>登入名稱</h5></span>
+                              <input type="text" name="login_id" ng-model="login.login_id" ng-disabled="submitting" placeholder="輸入登入名稱">
+                            </label>
+                            <label class="item item-input">
+                              <span class="input-label"><h5>登入密碼</h5></span>
+                              <input type="password" name="login_pw" ng-model="login.login_pw" ng-disabled="submitting" placeholder="輸入登入密碼">
+                            </label>
+                            <button type="submit" ng-disabled="submitting" id="loginBtn" class="button button-block button-small button-energized">               
+                              <ion-spinner icon="ios" ng-show="submitting == true"></ion-spinner>
+                              <span ng-hide="submitting">登入</span>
+                            </button>
+                          </div>
+                        </form>
+                        <div class="end-of-list"></div>
+                        <div class="end-of-list">－－－－－－－－－－－－</div>
+                      </div>
+                    </div>
+                    
+                    <div class="item" ng-show="show_reg_suc">
+                      <h3>歡迎！<b style="color:red">《{{new_user_nickname}}》</b>！</h3>
+                      <h4>建立專有帳戶，可在不同平台登入！</h4>
+                      <img src="img/devices.png">
+                      
+                      <div class="list">
+                        <label class="item item-input">
+                          <span class="input-label"><h5>登入名稱</h5></span>
+                          <input type="text" name="reg_id" ng-model="reg_info.login_id" 
+                          placeholder="6-15英數字" ng-disabled="submitting" maxlength="15">
+                        </label>
+                        <label class="item item-input">
+                          <span class="input-label"><h5>登入密碼</h5></span>
+                          <input type="password" name="reg_pw" ng-model="reg_info.login_pw" 
+                          placeholder="6-15英數字" ng-disabled="submitting" maxlength="15">
+                        </label>
+                        <label class="item item-input">
+                          <span class="input-label"><h5>確認密碼</h5></span>
+                          <input type="password" name="reg_pw" ng-model="reg_info.login_pw_confirm" 
+                          placeholder="與上相同" ng-disabled="submitting" maxlength="15">
+                        </label>
+                        <button ng-disabled="submitting" ng-click="regSubmit(reg_info)" id="regBtn" class="button button-block button-small button-energized">
+                          <ion-spinner icon="ios" ng-show="submitting == true"></ion-spinner>
+                          <span ng-hide="submitting">登記帳戶</span>
+                        </button>
+                        
+                      </div>
+                    </div>
+                    
+                    <div class="item" ng-show="show_reg_complete">
+                      <h2>你已建立專有帳戶！謝謝！</h2>
+                      <i class="icon xl-icon ion-android-favorite-outline"></i>
+                      <h4>現在可前往個人尊頁設定您的個人資料！</h4>
+                      <button ng-click="openUpdateInfo()" class="button button-block button-positive">
+                        前往個人尊頁
+                      </button>
+                      <button ng-click="closeLogin()" id="closeBtn" class="button button-block button-clear">
+                        關閉
+                      </button>
+                    </div>
+                  </div>
+                  
+                </div>
+              </ion-content>
+            </div>
+          </script>
+          
+        </body>
+        </html>

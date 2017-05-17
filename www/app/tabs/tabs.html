@@ -1,0 +1,53 @@
+
+<!--
+<ion-view title="tabs">
+  <div class="tabs tabs-icon-top" style="position: absolute;bottom: 0;">
+      <a class="tab-item home" ng-click="tabChange('home')">
+          <i class="icon ion-home"></i>
+          首頁
+      </a>
+      <a class="tab-item event" ng-click="tabChange('event')">
+          <i class="icon ion-speakerphone"></i>
+          招集
+      </a>
+      <a class="tab-item search" ng-click="tabChange('search')">
+          <i class="icon ion-ios-search-strong"></i>
+          尋找
+      </a>
+      <a class="tab-item profile" ng-click="tabChange('profile')">
+          <i class="icon ion-gear-a"></i>
+          個人
+      </a>
+      <a class="tab-item" ng-click="logout()">
+          <i class="icon ion-close-round"></i>
+          登出
+      </a>
+  </div>
+  <ion-nav-view name="tab-content">
+  </ion-nav-view>
+</ion-view>
+-->
+<ion-tabs class=" tabs-icon-top tabs-default" ng-class="hideTabs ? 'tabs-item-hide' : ''">
+  
+  <ion-tab title="首頁" class="home" icon="icon ion-home" ng-click="tabChange('home')">
+    <ion-nav-view name="tab-content"></ion-nav-view>
+  </ion-tab>
+  
+  <ion-tab title="尋找" class="search" icon="icon ion-ios-search-strong" ng-click="tabChange('search')">
+    <ion-nav-view name="tab-search"></ion-nav-view>
+  </ion-tab>
+  
+  <ion-tab title="招集" class="event" icon="icon ion-speakerphone" ng-click="tabChange('event')">
+    <ion-nav-view name="tab-event"></ion-nav-view>
+  </ion-tab>
+  
+  <ion-tab title="個人" class="profile" icon="icon ion-person" ng-click="tabChange('profile')">
+    <ion-nav-view name="tab-profile"></ion-nav-view>
+  </ion-tab>
+  
+  <ion-tab title="意見反映" class="feedback" icon="icon ion-ios-chatbubble" ng-click="tabChange('feedback')">
+    <ion-nav-view name="tab-feedback"></ion-nav-view>
+  </ion-tab>
+  
+  
+</ion-tabs>

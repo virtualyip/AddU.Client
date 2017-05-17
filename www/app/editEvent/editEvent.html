@@ -1,0 +1,431 @@
+
+<ion-view title="招集" ng-controller="EditEventCtrl">
+  
+  <ion-nav-bar class="bg-gold-light">
+    <ion-nav-back-button class="button button-header">
+      <i class="ion-ios-arrow-back"></i>
+    </ion-nav-back-button>
+    <ion-nav-buttons side="right">
+      <button class="button button-icon icon ion-ios-help-outline"
+        ng-click="openInstructionModal('instruction/event-edit.png')">
+      </button>
+      <button class="button button-header ion-checkmark-round" 
+        ng-disabled="isSubmitting"
+        ng-click="eventSubmit(event)" ng-show="user.user_id != null">&nbsp;發佈
+      </button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+<ion-side-menus delegate-handle="area-side-menu">
+  <!-- Center content -->
+  <ion-side-menu-content>
+  
+    <!-- not logined -->
+    <div ng-hide="user.user_id != null" class="full-content ion-content-bg row row-center" ng-click="showLogin()">
+      <div style="text-align: center; width: 80%; margin: auto;">
+        <i class="ion-android-sad xl-icon"></i>
+        <h2>請先登入</h2>
+        <h4>按此登入</h4>
+      </div>
+    </div>
+    
+    <ion-content class=" ion-content-bg">
+    <!--<form name="eventForm" novalidate="" ng-submit="eventSubmit(event)" method="post" enctype="multipart/form-data">-->
+      <div class="list">
+
+      <!-- logined -->
+      <div ng-show="user.user_id != null">
+        <div class="item item-avatar item-button-right">
+          <img ng-click="openUserNamecard(user_info.user_id)" src="img/loading.gif" ng-src="{{user_info.img_src}}" err-src="img/user-default.jpg" id="u_{{user_info.user_id}}" width="100%">
+          <span ng-click="openUserNamecard(user_info.user_id)">
+            <h2>{{user_info.nickname}}</h2>
+            <p>你是舉辦者</p>
+          </span>
+          <button class="button button-header" ng-click="takePic()">
+            選取活動照片
+          </button>
+        </div>
+        
+        <div class="list edit-event-form">
+          <span ng-hide="temp.img_src == null" ng-click="delTableIcon()">
+            <img ng-src="{{temp.img_src}}" err-src="img/line-img.jpg" width="100%">
+          </span>
+          <label class="item item-input item-icon-left">
+            <i class="icon ion-chatbubble-working"></i>
+            <span class="input-label">主題</span>
+            <input type="text" maxlength="40" name="table_title" ng-model="event.table_title" 
+              placeholder="輸入你的主題吧 (必需輸入)" style="text-align: right" required>
+          </label>
+        </div>
+        
+        <div class="list list-inset edit-event-form">
+          <div class="item item-divider">活動資料</div>
+          <label class="item item-input item-select item-icon-left">
+            <i class="icon ion-eye" style="color:#884444"></i>
+            <div class="input-label">活動公開範圍</div>
+            <select name="" ng-model="event.private">
+              <option value="0">向所有人公開</option>
+              <option value="1">非公開</option>
+            </select>
+          </label>
+          
+          
+          <label class="item item-input item-select item-icon-left">
+            <i class="icon ion-clipboard"></i>
+            <div class="input-label">活動類型</div>
+            <select name="table_content" ng-model="event.table_content">
+              <option value="一般活動" selected>一般活動</option>
+              <option value="飯局">飯局</option>
+              <option value="球類活動">球類活動</option>
+              <option value="戶外活動">戶外活動</option>
+              <option value="吹水閒聊">吹水閒聊</option>
+              <option value="興趣活動">興趣活動</option>
+              <option value="義工活動">義工活動</option>
+              <option value="宗教活動">宗教活動</option>
+            </select>
+            <!--
+            <span class="input-label">類型</span>
+            <input type="text" maxlength="255" name="table_content" ng-model="event.table_content" placeholder="輸入活動詳情 (必需輸入)" required>
+            -->
+          </label>
+          
+          <div class="item item-select item-icon-left row row-center">
+            <i class="icon ion-location"></i>
+            <span class="input-label" style="padding-left: 44px"> 地區</span>
+            <button class="button button-small button-clear button-dark col" menu-toggle="right" 
+              ng-click="toggleRegionSelection()" style="text-align: right; padding-right: 40px">
+              <span ng-show="event.table_region == null && event.table_district == null">按此選擇</span>
+              {{temp.region_text}} {{temp.district_text}}
+            </button>
+          </div>
+          
+          <!--
+          <label class="item item-input item-select">
+            <div class="input-label ion-location">.地點</div>
+            <select name="table_region" ng-model="event.table_region" ng-change="tableRegionChanged(event.table_region)">
+              <option value="">請選擇</option>
+              <option value="hk">香 港</option>
+              <option value="kln">九 龍</option>
+              <option value="nt">新 界</option>
+              <option value="ot">其 他</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-select" ng-show="temp['showElement'].table_district">
+            <div class="input-label">+分區</div>
+            <select name="table_district" ng-model="event.table_district" ng-change="tableDistrictChanged()">
+              <option value="">請選擇</option>
+              <option ng-repeat="(district_key, district_value) in temp['region']" value="{{district_key}}">{{district_value.text}}</option>
+            </select>
+          </label>
+          -->
+          <label class="item item-input item-icon-left" ng-hide="event.table_district == null">
+            <i class="icon"></i>
+            <span class="input-label">+位置</span>
+            <input type="text" maxlength="255" name="table_address" ng-model="event.table_address" 
+              placeholder="輸入活動位置" style="text-align: right" required>
+          </label>
+
+          <label class="item item-input item-select item-icon-left" ng-hide="event.table_address == null">
+            <div class="input-label">+位置公開?</div>
+            <select name="address_public" ng-model="event.address_public">
+              <option value="1" selected>位置公開</option>
+              <option value="0">只限你接受的申請者</option>
+            </select>
+          </label>
+          
+          <div class="item item-select item-icon-left row row-center">
+            <i class="icon ion-calendar"></i>
+            <span class="input-label" style="padding-left: 44px"> 日期</span>
+            <button class="button button-small button-clear button-dark col"
+              ng-click="tableDateClicked()" style="text-align: right; padding-right: 40px">
+              <span ng-show="temp.table_date == null">按此選擇</span>
+              {{temp.table_date}}
+            </button>
+          </div>
+          
+          <!--
+          <label class="item item-input item-select item-icon-left" ng-hide="temp.table_date == null">
+            <i class="icon ion-clock"></i>
+            <div class="input-label">開始時間</div>
+            <input type="time" name="table_time" ng-model="temp.table_time" ng-change="tableTimeChanged()"
+             style="text-align: right">
+          </label>
+          -->
+          
+          <div class="item item-select item-icon-left row row-center">
+            <i class="icon ion-clock"></i>
+            <span class="input-label" style="padding-left: 44px"> 開始時間</span>
+            <button class="button button-small button-clear button-dark col" menu-toggle="right"
+              ng-click="toggleTimeSelected()" style="text-align: right; padding-right: 40px">
+              <span ng-show="temp.table_time_hr == null">按此選擇</span>
+              {{temp.table_time_hr}}:{{temp.table_time_min}}
+            </button>
+          </div>
+          <!--
+          <label class="item item-input item-icon-left" ng-hide="temp.table_date == null">
+            <i class="icon ion-clock"></i>
+            <div class="input-label">開始時間</div>
+            <div style="text-align: right; width: 100%; padding-right: 60px;">
+              <select name="table_time_hr" ng-model="temp.table_time_hr" ng-change="tableTimeChanged()">
+                <option value="08">8</option>
+                <option value="09">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12" selected>12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="00">0</option>
+                <option value="01">1</option>
+                <option value="02">2</option>
+                <option value="03">3</option>
+                <option value="04">4</option>
+                <option value="05">5</option>
+                <option value="06">6</option>
+                <option value="07">7</option>
+              </select>：
+              <select name="table_time_min" ng-model="temp.table_time_min" ng-change="tableTimeChanged()">
+                <option value="00" selected>00</option>
+                <option value="05">05</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+              </select>
+            </div>
+          </label>
+          -->
+          <label class="item item-input item-select item-icon-left" ng-hide="temp.table_date == null">
+            <i class="icon ion-clock"></i>
+            <div class="input-label">持續時間</div>
+            <select name="native_include" ng-model="event.table_time_lastfor">
+              <option value="1" selected>0-1小時</option>
+              <option value="2">1-2小時</option>
+              <option value="3">2-3小時</option>
+              <option value="4">3-4小時</option>
+              <option value="5">4-5小時</option>
+              <option value="6">多於5小時</option>
+            </select>
+          </label>
+        </div>
+        
+        
+        <div class="list list-inset edit-event-form">
+          <div class="item item-divider">
+            額外資料
+          </div>
+          <label class="item item-input item-select item-icon-left">
+            <i class="icon ion-person-stalker"></i>
+            <div class="input-label">舉辦者人數</div>
+            <select name="leader_cnt" ng-model="event.leader_cnt">
+              <option value="1" selected>1人</option>
+              <option value="2">2人</option>
+              <option value="3">3人</option>
+              <option value="4">4人</option>
+              <option value="5">5人</option>
+              <option value="6">6人</option>
+              <option value="7">7人</option>
+              <option value="8">8人</option>
+              <option value="9">9人</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-select item-icon-left">
+            <i class="icon ion-person-add"></i>
+            <div class="input-label">邀請人數</div>
+            <select name="invite_cnt" ng-model="event.invite_cnt">
+              <option value="1" selected>1人</option>
+              <option value="2">2人</option>
+              <option value="3">3人</option>
+              <option value="4">4人</option>
+              <option value="5">5人</option>
+              <option value="6">6人</option>
+              <option value="7">7人</option>
+              <option value="8">8人</option>
+              <option value="9">9人</option>
+              <option value="99">不限</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-icon-left">
+            <i class="icon ion-android-bulb"></i>
+            <span class="input-label">活動提示</span>
+            <input type="text" name="table_content2" ng-model="event.table_content2" 
+              placeholder="例如：請帶水" style="text-align: right" required>
+          </label>
+          
+          <label class="item item-input item-select item-icon-left" ng-hide="temp.table_date == null && temp.table_time == null">
+            <i class="icon ion-ios-alarm-outline"></i>
+            <div class="input-label">截止報名</div>
+            <select name="table_apply_deadline_days" ng-model="temp.table_apply_deadline_days" 
+              ng-change="tableApplyDeadlineChanged(temp.table_apply_deadline_days)">
+              <option value="0" selected>不限定</option>
+              <option value="1">活動前1日</option>
+              <option value="2">活動前2日</option>
+              <option value="3">活動前3日</option>
+              <option value="4">活動前4日</option>
+              <option value="5">活動前5日</option>
+              <option value="6">活動前6日</option>
+              <option value="7">活動前7日</option>
+              <option value="-1">指定日期</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-select item-icon-left" ng-click="tableApplyDeadlineDateClicked()" ng-show="temp.table_apply_deadline_days == -1">
+            <div class="input-label ion-calendar">截止日期</div>
+            <span ng-show="temp.table_apply_deadline_date == null">按此選擇</span>
+            {{temp.table_apply_deadline_date}}
+          </label>
+          <!--
+          <label class="item item-input item-select item-icon-left" ng-show="temp.table_apply_deadline_days == -1">
+            <div class="input-label">截止時間</div>
+            <input type="time" name="table_apply_deadline_time" ng-model="temp.table_apply_deadline_time">
+          </label>
+          -->
+        </div>
+        
+        <div class="list list-inset edit-event-form">
+          <div class="item item-divider" ng-click="toggleTableTargetSetting()">
+            對像設定
+          </div>
+          <div>
+            <label class="item item-input item-select item-icon-left">
+              <i class="icon ion-person"></i>
+              <div class="input-label">對像姓別</div>
+              <select name="sex_include" ng-model="event.sex_include">
+                <option value="" selected>不限</option>
+                <option value='m'>只限男性</option>
+                <option value='f'>只限女性</option>
+              </select>
+            </label>
+            
+            <label class="item item-input item-select item-icon-left">
+              <i class="icon ion-person"></i>
+              <div class="input-label">對像年齡</div>
+              <select name="age_include" ng-model="event.age_include">
+                <option value="" selected>不限</option>
+                <option value='teenager'>青少年</option>
+                <option value='middleage'>中年人</option>
+                <option value='elderly'>長輩</option>
+              </select>
+            </label>
+            
+            <label class="item item-input item-select item-icon-left">
+              <i class="icon ion-person"></i>
+              <div class="input-label">對像國藉</div>
+              <select name="native_include" ng-model="event.native_include">
+                <option value="" selected>不限</option>
+                <option value="hk">香港人</option>
+                <option value="cn">中國人</option>
+                <option value="asia">亞州人</option>
+                <option value="ot">其他</option>
+              </select>
+            </label>
+            
+            <label class="item item-input item-select item-icon-left">
+              <i class="icon ion-key"></i>
+              <div class="input-label">需為己註冊會員</div>
+              <select name="user_id_required" ng-model="event.user_id_required">
+                <option value="0" selected>否</option>
+                <option value="1">是</option>
+              </select>
+            </label>
+            
+            <!--
+            <label class="item item-input item-select">
+              <div class="input-label">能喝酒水</div>
+              <select name="table_drink" ng-model="event.table_drink">
+                <option value="0" selected>否</option>
+                <option value="1">是</option>
+              </select>
+            </label>
+            
+            <label class="item item-input">
+              <span class="input-label">《加埋您》會員等級</span>
+              <input type="number" name="user_lv_include" ng-model="event.user_lv_include" required>
+            </label>
+            
+            <label class="item item-input">
+              <span class="input-label">《加埋您》會員積分</span>
+              <input type="number" name="points_include" ng-model="event.points_include" required>
+            </label>
+            
+            <label class="item item-input">
+              <span class="input-label">《加埋您》會員讚評</span>
+              <input type="number" name="likes_include" ng-model="event.likes_include" required>
+            </label>
+            
+            <label class="item item-input">
+              <span class="input-label">《加埋您》會員負評</span>
+              <input type="number" name="dislike_exclude" ng-model="event.dislike_exclude" required>
+            </label>
+            -->
+          </div>
+        </div>
+        
+        <button ng-show="event.table_id != null" ng-disabled="isSubmitting"
+          class="button button-block button-positive" ng-click="tableCancellation(event)">
+          《結束此活動》
+        </button>
+        
+      </div>
+    </div>      
+    <!--</form>-->
+  </ion-content>
+  </ion-side-menu-content>
+
+    <!-- Right menu -->
+    <ion-side-menu side="right" width="150">
+      <ion-content class="" scroll="true">
+        <div class="list edit-event-form">
+          <div class="item item-divider">請選擇</div>
+          <div class="item item-icon-right" ng-repeat="(key,value) in region_select" ng-click="toggleDistrictSelection(key, value)">
+            {{value}}<i class="icon ion-chevron-right"></i>
+          </div>
+          <div class="item item-icon-right" ng-repeat="(key,value) in district_select" menu-close="right" ng-click="districtSelected(key, value)">
+            {{value}}
+          </div>
+          <div class="item item-icon-right" ng-repeat="(key,value) in hour_select" ng-click="hourSelected(key, value)">
+            {{value}}
+          </div>
+          <div class="item item-icon-right" ng-repeat="(key,value) in minute_select" menu-close="right" ng-click="minuteSelected(key, value)">
+            {{value}}
+          </div>
+        </div>
+      </ion-content>
+    </ion-side-menu>
+  </ion-side-menus>
+  
+  <modal-dialog show="temp['showElement'].table_calendar" dialog-title='請選擇日期'>
+    <div class="container">
+      <div pickadate="" ng-model="temp.table_date" 
+        default-date="temp.table_date"
+        min-date="temp.table_minDate" max-date="temp.table_maxDate"
+        format="yyyy-mm-dd" ng-change="tableCalendarChanged()"></div>
+    </div>
+  </modal-dialog>
+        
+  <modal-dialog show="temp['showElement'].table_deadline_calendar" dialog-title='請選擇日期'>
+    <div class="container">
+      <div pickadate="" ng-model="temp.table_apply_deadline_date" 
+        min-date="temp.table_minDate" max-date="temp.table_maxDate"
+        format="yyyy-mm-dd" ng-change="tableDeadlineCalendarChanged()"></div>
+    </div>
+  </modal-dialog>
+  
+</ion-view>

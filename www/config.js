@@ -1,0 +1,1 @@
+var APP_VERSION = "1.0.0";var APP_UPDATE_TITLE = "有新版本";var APP_UPDATE_INFO = "請更新系統<br>1. 修正系統錯誤";var APP_NOTICE = "";var main_server = "http://ec2-54-254-191-134.ap-southeast-1.compute.amazonaws.com/api/addu/";var img_url = main_server+"image.php";var share_path = 'http://ec2-54-254-191-134.ap-southeast-1.compute.amazonaws.com/app/#/tab/event/';

@@ -1,0 +1,15 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[credential]
+	helper = gcloud.cmd
+[remote "google"]
+	url = https://source.developers.google.com/p/irot7-144809/r/projects
+	fetch = +refs/heads/*:refs/remotes/google/*
+[gui]
+	wmstate = iconic
+	geometry = 830x427+26+26 181 192

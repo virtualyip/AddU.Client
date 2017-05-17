@@ -1,0 +1,377 @@
+
+<ion-view title="{{table_details.table_title}}" ng-controller="EventDetailCtrl">
+
+  <ion-nav-bar class="bg-gold-light">
+    <ion-nav-back-button class="button button-header" ng-click="goBack()">
+      <i class="ion-arrow-left-c"></i>
+    </ion-nav-back-button>
+    <ion-nav-buttons side="left">
+      <button class="button button-light ion-home" 
+        ng-click="tabChange('home')"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button class="button button-icon icon ion-ios-help-outline"
+        ng-click="openInstructionModal('instruction/details.png')">
+      </button>
+      <button class="button button-energized" 
+        ng-show="!table_details.isTableOwner"
+        ng-click="newTableApplication()">申請加入</button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+<ion-side-menus>
+  <div class="bar bar-subheader event-detail-header" ng-show="showTableDetials">
+    
+    <div class="row" style="padding:0px">
+      <div class="col col-33"><i class="icon ion-clipboard"></i> {{table_details.table_content}}</div>
+      <button class="col button button-clear button-light" menu-close="right"><i class="icon ion-chatbubble-working"></i> 留言</button>
+      <button class="col button button-clear button-light" ng-show="user_role == 'leader'" ng-click="toggleTableUpdate(table_details.table_id)"><i class="icon ion-ios-compose-outline"></i> 修改活動</button>
+      <button class="col button button-clear button-light" ng-show="!table_details.isTableOwner"
+        ng-click="followTableInDetail(table_details)">
+        <i class="icon" ng-class="table_details.isBookmarked ? 'ion-ios-heart' : 'ion-ios-heart-outline'"></i> 
+        <span ng-hide="table_details.isBookmarked">關注</span>
+        <span ng-show="table_details.isBookmarked">取消</span>
+      </button>
+      <button class="col button button-clear button-light" ng-click="openSharePopover($event, table_details)"><i class="icon ion-share"></i> 分享</button>
+      <!--
+      <button class="col button button-clear button-positive" ng-show="user_role == 'applier'" ng-click="newTableApplication()">己申請</button>
+      <button class="col button button-clear button-positive" ng-show="user_role == 'customer' || user_role == 'vip'" ng-click="newTableApplication(true)"> 己加入</button>
+      <button class="col button button-clear button-positive" ng-show="user_role == 'withdrawn'" ng-click="newTableApplication()"> 己退出</button>   
+      <button type="button" class="col" ng-show="user_role == 'leader' && (table_details.group_team_id == null || table_details.ungroup_date != null)" ng-click="groupTable(table_details.table_id)">成團</button>
+      <button type="button" class="col" ng-show="user_role == 'leader' && (table_details.group_team_id != null && table_details.ungroup_date == null)" ng-click="ungroupTable(table_details.table_id, table_details.group_team_id)">解團</button>
+      <button class="col button button-clear button-positive" menu-toggle="right">參與者</button>
+      -->
+    </div>
+  </div>
+   
+  <!-- Main Content -->
+  <ion-side-menu-content class="has-subheader has-footer ion-content-bg" padding="false" ng-controller="ChatroomCtrl">    
+    
+    <!-- not logined -->
+    <div ng-hide="showTableDetials" class="full-content ion-content-bg row row-center" ng-click="showLogin()">
+      <div style="text-align: center; width: 80%; margin: auto;">
+        <i class="ion-android-sad xl-icon"></i>
+        <h2>請先登入</h2>
+        <h4>按此登入</h4>
+      </div>
+    </div>
+     
+    <ion-content class="has-footer has-subheader" ng-show="showTableDetials" style="bottom: 144px" padding="false">
+      
+      <ion-refresher pulling-text="載入更多" on-refresh="loadMore(channel,'l')"></ion-refresher>
+      
+      
+      <div class="list">
+        <span ng-show="channel == 'public'">
+          
+          <ion-item class="item item-msg wrap" 
+            ng-click="openPopover($event, chat_info)"
+            ng-repeat="chat_info in chat | orderBy:'chat_date'" 
+            ng-show="chat_info.del_flag == 0">
+            
+            <span class="msg" ng-disabled="submitting">
+              <img src="img/loading.gif" ng-src="{{chat_info.img_src}}" err-src="img/user-default.jpg" width="20px" height="20px">
+              <span class="title">{{chat_info.nickname}}:</span>
+              <span class="content">{{chat_info.chat_content}}</span>
+              <span class="item-note">
+                <i class="ion-clock"></i>
+                {{chat_info.chat_date_text}}
+              </span>
+            </span>
+          </ion-item>
+          <div class="end-of-list" ng-show="chatList['public'].length == 0">
+            <br>
+            沒有留言，你可以<br><br>
+            － 在底下 <b style="color:red">輸入訊息</b> 和大家SAY Hi！ <br><br>
+            － 在底下按 <b style="color:red">相關 ></b> 查看詳情 <br><br>
+            － 在右上方 <b style="color:red"><i class="icon ion-share"></i>分享</b> 此活動
+          </div>
+        </span>
+        
+        <span ng-show="channel == 'private'">
+          
+          <ion-item class="item item-msg wrap" 
+            ng-click="openPopover($event, chat_info)"
+            ng-repeat="chat_info in chat | orderBy:'chat_date'" 
+            ng-show="chat_info.del_flag == 0">
+            
+            <span class="msg" ng-disabled="submitting">
+              <img src="img/loading.gif" ng-src="{{chat_info.img_src}}" err-src="img/user-default.jpg" width="20px" height="20px">
+              <span class="title">{{chat_info.nickname}}:</span>
+              <span class="content">{{chat_info.chat_content}}</span>
+              <span class="item-note">
+                <i class="ion-clock"></i>
+                {{chat_info.chat_date_text}}
+              </span>
+            </span>
+          </ion-item>
+          <div class="end-of-list" ng-show="chatList['private'].length == 0">
+            組員頻道暫時沒有留言！
+          </div>
+        </div>
+        
+        <div class="end-of-list" ng-show="isLoading">
+          讀取中
+        </div>
+        <div class="end-of-list" ng-click="loadMore(channel,'u')" ng-hide="isLoading">
+          《按 此 更 新》
+        </div>
+        
+      </span>
+      
+      <script id="chat-popover.html" type="text/ng-template">
+        <ion-popover-view class="fit">
+          <ion-content scroll="false" ng-click="popover.hide()">
+            <div class="item" ng-click="openUserNamecard(chat_info.chat_from)">查看此用戶</div>
+            <div class="item" ng-click="chatReply(chat_info)">回覆</div>
+            <!--<div class="item" ng-click="" ng-hide="chat_info.chat_from == user.user_id">追蹤此用戶</div>
+            <div class="item" ng-click="" ng-hide="chat_info.chat_from == user.user_id">封除此用戶</div>-->
+            <div class="item" ng-click="copyText(chat_info.chat_content)">復制</div>
+            <div class="item" ng-click="delete_msg(chat_info)" ng-show="chat_info.chat_from == user.user_id">刪除此訊息</div>
+          </ion-content>
+        </ion-popover-view>
+      </script>
+    </ion-content>
+    
+    <!-- footor -->
+    <div style="height:auto; position: absolute;bottom: 0;width:100%">
+      <div class="list" ng-show="showTableDetials" ng-click="!showTableDetials ? showLogin() : '';">
+        <a class="item item-icon-right" style="padding:5px; font-size: 12px; color: #888888;" menu-toggle="right">
+          <div style="padding-right:40px;min-height:30px;max-height:72px;white-space: normal;">
+            <span ng-show="table_details.hasNewFollow || table_details.hasNewApply" class="news_cnt"> N </span>相關：
+            <span ng-show="table_user_list.length == 0"><ion-spinner></ion-spinner>讀取中</span>
+            <span ng-repeat="table_user in table_user_list | orderBy:'role_lv'">
+              {{table_user.nickname}}({{table_user.role_desc}}), &nbsp;
+            </span>
+            <i class="icon ion-chevron-right"></i>
+          </div>
+        </a>
+        
+        <div class="button-bar" style="padding:0px">
+          <button class="button-small button" ng-class="channel == 'public' ? 'button-positive' : 'button-light'"
+            ng-click="togglePublicChatroom(user_role)">公開頻道</button>          
+          <button class="button-small button" ng-class="channel == 'private'? 'button-positive' : 'button-light'"
+            
+            ng-click="togglePrivateChatroom(user_role)">
+              組員頻道
+              <span ng-show="table_details.hasNewPrivateChat" class="news_cnt"> N </span>
+            </button>
+        </div>
+        
+        <div class="item item-input-inset bg-gold">
+          <div><i class="icon ion-android-happy" style="font-size: 20px; color: #000000"></i>：</div>
+          <label class="item-input-wrapper">
+            <input type="text" ng-model="chat_content" style="width: 100%;" placeholder="留下訊息..">
+          </label>
+          <button class="button button-small button-energized" ng-disabled="submitting" ng-click="send_msg(channel, chat_content)">
+            傳送
+          </button>
+        </div>
+      </div>
+    </div>
+  </ion-side-menu-content>
+    
+    
+  <!-- Left menu 
+  <ion-side-menu side="left">
+    <ion-content class="has-subheader ion-content-bg" ng-show="showTableDetials">
+    </ion-content>
+  </ion-side-menu>
+  -->
+
+  <!-- Right menu -->
+  <ion-side-menu side="right" ng-controller="EventUserCtrl" width="350">
+    <ion-content class="has-subheader ion-content-bg" ng-show="showTableDetials">
+    
+      <a class="item item-divider item-icon-left bg-gold-light" menu-close="right">
+        <i class="icon ion-chevron-left"></i>返回留言
+      </a>
+      
+      <div class="event_box">
+      
+        <!------- item view --------->
+        <div class="item item-view" ng-hide="listView" style="margin: 0">
+          <div class="event">
+            <span class="status">{{table_details.table_status_text}}</span>
+            <div class="header">
+              <div class="content">
+                <span class="label">
+                  <i class="icon ion-clock"></i>
+                  {{table_details.table_date_text}} {{table_details.table_time_text}} ({{table_details.table_time_lastfor}}小時)
+                </span>
+              </div>
+              <div class="content">
+                <span class="label">
+                  <i class="icon ion-ios-calendar-outline"></i>
+                   &nbsp;{{dateToText(table_details.table_date+" "+table_details.table_time)}}的{{dateToWeekText(table_details.table_date,"星期")}}
+                </span>
+              </div>
+              <div class="content">
+                <span class="label">
+                  &nbsp;<i class="icon ion-location"></i>&nbsp;
+                  {{table_details.table_region}},{{table_details.table_district}}
+                </span>
+              </div>
+            </div>
+              
+            <div class="content">
+              <div class="content">
+                <img ng-src="{{table_details.img_src}}" err-src="img/bg-door.jpg" id="t_{{table_details.table_id}}">
+              </div>
+            </div>
+            
+            <div class="footer" ng-click="toggleTableDetials(ev, true)">
+              <span class="label">
+                <span><i class="icon ion-speakerphone"></i>：{{table_details.invite_cnt_text}}</span>
+              </span>
+              <span class="label">
+                <i class="icon ion-ios-pricetags-outline"></i>
+                <span>
+                  <!--<i class="icon ion-person"></i>-->
+                  {{table_details.target_include_text}}
+                </span>
+              </span>
+              <span class="label reminder">
+                <span>
+                  <i class="icon ion-ios-alarm" ng-show="table_details.hasDeadline"></i>
+                  <i class="icon ion-locked" ng-show="table_details.table_locked"></i>
+                  <i class="icon ion-ios-personadd" ng-show="table_details.user_id_required"></i>
+                  <i class="icon ion-key" ng-show="table_details.user_filter_on"></i>
+                  <i class="icon ion-wineglass" ng-show="table_details.table_drink"></i>
+                  <i class="icon ion-ios-eye" ng-show="!table_details.address_public"></i>
+                  <i class="icon ion-ios-locked" ng-show="table_details.private"></i>
+                  <i class="icon ion-beer" ng-show="table_details.event_drink"></i>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <!--
+      <button class="button button-block" ng-click="tableUserListRefresh()">
+        現有{{table_details.total_involved_cnt}}人 - refresh
+      </button>
+      -->
+      <div class="user-list" ng-repeat="(i, involved_user) in table_user_list">
+        <span ng-click="openUserNamecard(involved_user.user_id)">
+          <span class="img">
+            <img src="img/loading.gif" ng-src="{{involved_user.img_src}}" err-src="img/user-default.jpg" id="u_{{involved_user.user_id}}" width="40px" height="40px">
+          </span>
+          <div class="title">
+            {{involved_user.nickname}} 
+          </div>
+          <div class="content">
+            {{involved_user.role_desc}} {{involved_user.member_cnt_text}}
+          </div>
+        </span>
+        <span class="btn">
+          <!-- 邀請 -->
+          <button class="button button-positive ion-person-add" ng-click="tableInvitement(involved_user, 'create')" 
+            ng-show="table_details.isTableOwner && (involved_user.role == 'follower' || involved_user.role == 'doubt')">
+          </button>
+          <!-- 收回邀請 -->
+          <button class="button button-positive ion-close-circled" ng-click="cancelInvolvement('invite', involved_user.involve_id)" 
+            ng-show="table_details.isTableOwner && (involved_user.role == 'vip' || involved_user.role == 'invitor')">
+          </button>
+          <!-- 接受申請 -->
+          <button class="button button-positive ion-checkmark-round" ng-click="involveReply(involved_user, 'accept')" 
+            ng-show="table_details.isTableOwner && (involved_user.role == 'applier' || involved_user.role == 'customer')" 
+            ng-disabled="involved_user.status == 'accept'">
+          </button>
+          <!-- 拒絕申請 -->
+          <button class="button button-royal ion-close-round" ng-click="involveReply(involved_user, 'reject')" 
+            ng-show="table_details.isTableOwner && (involved_user.role == 'applier' || involved_user.role == 'customer')" 
+            ng-disabled="involved_user.status == 'reject'">
+          </button>
+          
+          <!-- 申請 -->
+          <button class="button button-positive ion-person-add" ng-click="newTableApplication()"
+            ng-show="!table_details.isTableOwner && involved_user.role == 'leader'">
+          </button>
+          <!-- 接受邀請 -->
+          <button class="button button-positive ion-checkmark-round" ng-click="involveReply(involved_user, 'accept')" 
+            ng-show="!table_details.isTableOwner && involved_user.user_id == user.user_id && (involved_user.role == 'invitor' || involved_user.role == 'vip')" 
+            ng-disabled="involved_user.status == 'accept'">
+          </button>
+          <!-- 拒絕邀請 -->
+          <button class="button button-royal ion-close-round" ng-click="involveReply(involved_user, 'reject')" 
+            ng-show="!table_details.isTableOwner && involved_user.user_id == user.user_id && (involved_user.role == 'invitor' || involved_user.role == 'vip')" 
+            ng-disabled="involved_user.status == 'reject'">
+          </button>
+          
+        </span>
+      </div>
+      
+      <div class="end-of-list" ng-hide="isUserListLoading" ng-click="tableUserListRefresh()">《 按 此 更 新 》</div>
+      <div class="end-of-list" ng-show="isUserListLoading">
+        讀取中
+      </div>
+    </ion-content>
+    
+  </ion-side-menu>
+</ion-side-menus>
+  
+  <script id="new-apply.html" type="text/ng-template">
+    <div class="modal">
+      <!-- Modal header bar -->
+      <ion-header-bar class="bar-secondary bg-gold">
+        <button class="button button-header" ng-click="closeTableApplication()">返回</button>
+        <h1 class="title">要求加入: {{table_details.table_title}}</h1>
+      </ion-header-bar>
+  
+      <!-- Modal content area -->
+      <ion-content class="ion-content-bg">
+        <div class="list">
+          <!--
+          <label class="item item-input">
+            <span class="input-label">申請標題</span>
+            <input type="text" name="involve_title" ng-model="involve.involve_title" required>
+          </label>
+          <label class="item item-input">
+            <span class="input-label">申請內容</span>
+            <input type="text" name="involve_content" ng-model="involve.involve_content">
+          </label>
+          -->
+          <label class="item item-input item-select">
+            <div class="input-label">你的人數</div>
+            <select name="involve_member_cnt" ng-model="involve.involve_member_cnt">
+              <option value="1" ng-selected="selected">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+            </select>
+          </label>
+          
+          <div class="row">             
+            <div class="col"><button ng-click="closeTableApplication()" ng-disabled="submitting" class="button button-block button-positive">返回</button></div>
+            <div class="col" ng-show="ev.isDeadlined"><button class="button button-block">已截止</button></div>
+            <div class="col" ng-show="ev.isEnded"><button class="button button-block">已完結</button></div>
+            <div class="col" ng-show="user_role == ''" ng-click="followTableInDetail(table_details)">
+              <button class="button button-block button-header">請先關注</button>
+            </div>
+            <div class="col" ng-show="user_role == '' || user_role == 'follower' || user_role == 'doubt'">
+              <button ng-click="tableApplication(involve, 'create')" ng-disabled="user_role == '' || submitting" class="button button-block button-positive">傳送要求</button>
+            </div>
+            <div class="col" ng-show="user_role == 'applier'">
+              <button ng-click="cancelInvolvement('apply', user_involve_id)" ng-disabled="submitting" class="button button-block button-positive">收回</button>
+            </div>
+            <div class="col" ng-show="user_role == 'applier'">
+              <button ng-click="tableApplication(involve, 'update')" ng-disabled="submitting" class="button button-block button-positive">更改</button>
+            </div>
+            <div class="col" ng-show="user_role == 'customer' || user_role == 'vip'">
+              <button ng-click="cancelInvolvement('apply', user_involve_id)" ng-disabled="submitting" class="button button-block button-positive">退出</button>
+            </div>
+            <div class="col" ng-show="user_role == 'withdrawn'">
+              <button ng-disabled="submitting" class="button button-block button-positive">己退出，沒有可選動作</button>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+    </div>
+  </script>

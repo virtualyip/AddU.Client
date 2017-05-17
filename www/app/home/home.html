@@ -1,0 +1,273 @@
+
+<ion-view title="加埋您" ng-controller="HomeCtrl">
+  
+  <ion-nav-bar class="bg-gold-light">
+    <ion-nav-back-button class="button button-header">
+      <i class="ion-ios-arrow-back"></i>
+    </ion-nav-back-button>
+    <ion-nav-buttons side="right">
+      <button class="button button-icon icon ion-ios-help-outline"
+        ng-click="openInstructionModal('instruction/home.png')">
+      </button>
+      <button class="button button-light icon"
+        ng-class="listView ? 'ion-navicon' :'ion-ios-list-outline'"
+        ng-click="toogleListView()">
+      </button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-header-bar class="bar bar-subheader" style="height: auto; padding:0px; ">
+    <div class="row row-center search_tabs">
+      <button class="col button button-clear user ion-ios-heart" ng-click="get_table_list('user',0)">您的</button>
+      <!--
+      <button class="col button button-clear user" ng-click="filter_table_list('owner')">你主辦</button>
+      <button class="col button button-clear user" ng-click="filter_table_list('involve')">感興趣</button>
+      -->
+      <button class="col button button-clear new" ng-click="get_table_list('new',0)">最新</button>
+      <button class="col button button-clear date" ng-click="get_table_list('date',0)">最近</button>
+      <button class="col button button-clear famous" ng-click="get_table_list('famous',0)">最愛</button>
+      <button class="col button button-clear star ion-star" ng-click="get_table_list('star',0)">星級</button>
+
+    </div>
+  </ion-header-bar >
+  <!--
+  <div class="bar bar-subheader item-input-inset">
+    <button class="button button-clear">西選地區</button>
+    <label class="item-input-wrapper">
+      <i class="icon ion-ios7-search placeholder-icon"></i>
+      <input type="search" placeholder="標題或內容" ng-model="search_keyword" maxlength="15">
+    </label>
+    <button class="button button-clear" ng-click="search(search_keyword)">
+      <i class="icon ion-search placeholder-icon"></i>
+    </button>
+  </div>
+-->
+
+  <!-- not logined -->
+  <div ng-show="isLoading.event_list == true" class="full-content row row-center">
+    <span style="text-align: center; width: 100%">
+      <button class="button button-positive button-clear">
+        <h2><ion-spinner icon="spiral"></ion-spinner>讀取中</h2>
+      </button>
+    </span>
+  </div>
+  
+  <div ng-show="isLoading.event_list == false && recent_events.length == 0" 
+    class="full-content row row-center" ng-click="get_table_list(sort_type, 0)">
+    <div style="text-align: center; width: 100%;">
+      <i class="ion-ios-home-outline xl-icon"></i>
+      <h2>沒有資料</h2>
+      <h4>去<b style="color:red;">收藏</b>活動或發起<b style="color:red;">招集</b></h4>
+      <h4>《按此更新》</h4>
+    </div>
+  </div>
+      
+  <ion-content class="has-subheader ion-content-bg" padding="false"> 
+
+    <ion-refresher pulling-text="載入更多" on-refresh="get_table_list(sort_type, 0)"></ion-refresher>
+          
+    <ion-list>      
+      <div ng-repeat="(i, ev) in recent_events"  ng-show="recent_events.length > 0 && !isLoading.event_list" class="event_box">
+      
+        <!------- item view --------->
+        <div class="item item-view" ng-hide="listView">
+          <div class="event_title">
+            <span class="img" ng-click="openUserNamecard(ev.user_id)">
+              <img src="img/loading.gif" ng-src="{{ev.user_img_src}}" err-src="img/user-default.jpg" id="u_{{ev.user_id}}">
+            </span>
+            <div>
+              <span class="title">{{ev.table_title}}</span><br>
+              <span class="name" ng-click="openUserNamecard(ev.user_id)">{{ev.nickname}}</span>
+              <span class="date"><i class="ion-clock"></i> {{dateToText(ev.table_created_date)}}</span>
+            </div>
+          </div>
+          <div class="event">
+            <span class="status">{{ev.table_status_text}}</span>
+            <div class="header">
+              <div class="content">
+                <span class="label">
+                  <i class="icon ion-clock"></i>
+                  {{ev.table_date_text}} {{ev.table_time_text}} ({{ev.table_time_lastfor}}小時)
+                </span>
+              </div>
+              <div class="content">
+                <span class="label">
+                  <i class="icon ion-ios-calendar-outline"></i>
+                   &nbsp;{{dateToText(ev.table_date+" "+ev.table_time)}}的{{dateToWeekText(ev.table_date,"星期")}}
+                </span>
+              </div>
+              <div class="content">
+                <span class="label">
+                  &nbsp;<i class="icon ion-location"></i>&nbsp;
+                  {{ev.table_region}},{{ev.table_district}}
+                </span>
+              </div>
+            </div>
+              
+            <div class="content">
+              <div class="content">
+                <img ng-src="{{ev.img_src}}" err-src="img/bg-door.jpg" id="t_{{ev.table_id}}">
+              </div>
+            </div>
+            
+            <div class="footer" ng-click="toggleTableDetials(ev, true)">
+              <span class="label">
+                <span><i class="icon ion-speakerphone"></i>：{{ev.invite_cnt_text}}</span>
+              </span>
+              <span class="label">
+                <i class="icon ion-ios-pricetags-outline"></i>
+                <span>
+                  <!--<i class="icon ion-person"></i>-->
+                  {{ev.target_include_text}}
+                </span>
+              </span>
+              <span class="label reminder">
+                <span>
+                  <i class="icon ion-ios-alarm" ng-show="ev.hasDeadline"></i>
+                  <i class="icon ion-locked" ng-show="ev.table_locked"></i>
+                  <i class="icon ion-ios-personadd" ng-show="ev.user_id_required"></i>
+                  <i class="icon ion-key" ng-show="ev.user_filter_on"></i>
+                  <i class="icon ion-wineglass" ng-show="ev.table_drink"></i>
+                  <i class="icon ion-ios-eye" ng-show="!ev.address_public"></i>
+                  <i class="icon ion-ios-locked" ng-show="ev.private"></i>
+                  <i class="icon ion-beer" ng-show="ev.event_drink"></i>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!------- list view --------->
+        <div class="item list-view" ng-show="listView">
+          <div class="row row-center event">
+            <span class="event_status">{{ev.table_status_text}}</span>
+            <div ng-click="openUserNamecard(ev.user_id)" class="event_icon">
+              <img src="img/loading.gif" ng-src="{{ev.user_img_src}}" err-src="img/user-default.jpg" id="u_{{ev.user_id}}">
+              <!--<img ng-src="{{ev.img_src}}" err-src="img/event-default.jpg" id="t_{{ev.table_id}}">-->
+            </div>
+            <div class="col" ng-click="toggleTableDetials(ev, true)">
+              <div class="col event_header">{{ev.table_title}}</div>
+              <div class="row">
+                <div class="col event_subheader">
+                  <span class="address">
+                    <i class="icon ion-clock"></i>
+                    {{ev.table_district}}區,
+                    {{ev.table_date_text}} {{ev.table_time_text}} ({{ev.table_time_lastfor}}小時)
+                  </span>
+                  <span class="user">
+                    由:{{ev.nickname}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-------- button set -------->
+        <div class="col">
+          <div class="row event_btn">
+            <button type="button" class="col button-clear has_news" ng-click="toggleTableDetials(ev)">
+              <i class="icon ion-chatbubble-working"></i> 
+              {{ev.chat_cnt_text}}
+              <span ng-show="ev.hasNewChatPrivate" class="news_cnt"> G </span>
+              <span ng-show="ev.hasNewChatPublic" class="news_cnt"> N </span>
+            </button>
+            <button type="button" class="col button-clear has_news" ng-show="ev.isTableOwner" ng-click="editEvent(ev)">
+              <i class="icon ion-ios-compose-outline"></i>
+              {{ev.followers_text}}
+              <span ng-show="ev.hasNewApply" class="news_cnt"> A </span>
+              <span ng-show="ev.hasNewFollow" class="news_cnt"> F </span>
+            </button>
+            <button type="button" class="col button-clear has_news" ng-show="!ev.isTableOwner" ng-click="followTable(ev)">
+              <i class="icon" ng-class="ev.isBookmarked ? 'ion-ios-heart' : 'ion-ios-heart-outline'"></i> 
+              {{ev.followers_text}}
+              <span ng-show="ev.hasNewApply" class="news_cnt"> A </span>
+              <span ng-show="ev.hasNewFollow" class="news_cnt"> F </span>
+            </button>
+            <button type="button" class="col button-clear" ng-click="openSharePopover($event, ev)">
+              <i class="icon ion-share"></i> 分享
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div ng-show="recent_events.length > 0 && !isLoading.event_list">
+        <div class="item" ng-show="isLoading.loadMore == true">
+          Loading More ...
+        </div>
+        
+        <div class="end-of-list" ng-show="noMoreItemsAvailable == true" ng-click="loadMore()">
+          <i class="l-icon ion-paper-airplane"></i>
+          <h4>沒有了</h4>
+        </div>
+      </div>
+      
+      <ion-infinite-scroll ng-if="!noMoreItemsAvailable" on-infinite="loadMore()" distance="3%"></ion-infinite-scroll>
+    </ion-list>
+    
+  </ion-content>
+
+  <modal-dialog show="showWarningBeforeEnter" dialog-title='此活動有以下提示'>
+    <div class="row">
+    </div>
+    <div class="row" ng-show="ev.isBlacklisted">
+      <i class="icon ion-alert-circled"></i>: 您已被止進入此活動
+    </div>
+    <div class="row" ng-show="ev.involve_withdrawn_date != null">
+      <i class="icon ion-alert-circled"></i>: 您曾退出／被退出此活動
+    </div>
+    <div class="row" ng-show="ev.table_content2 != null">
+      <i class="icon ion-alert-circled"></i>: 參加者需注意：{{ev.table_content2}}
+    </div>
+    <div class="row" ng-show="ev.sex_include_text != null">
+      <i class="icon " ng-class="ev.check.validSex ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 活動性別對象為{{ev.sex_include_text}}
+    </div>
+    <div class="row" ng-show="ev.age_include_text != null">
+      <i class="icon " ng-class="ev.check.validAge ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 活動年齡對象為{{ev.age_include_text}}
+    </div>
+    <div class="row" ng-show="ev.native_include_text != null">
+      <i class="icon " ng-class="ev.check.validNative ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 活動國藉對象為{{ev.native_include_text}}
+    </div>
+    <div class="row" ng-show="!ev.address_public">
+      <i class="icon ion-alert-circled" style="color:#DDBB00"></i>: 活動地址只公開予參加者
+    </div>
+    <div class="row" ng-show="ev.hasDeadline">
+      <i class="icon ion-alert-circled"></i>: 截止報名時間為{{ev.table_apply_deadline}}
+    </div>
+    <div class="row" ng-show="ev.user_id_required">
+      <i class="icon " ng-class="ev.isValidUser ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 需為已註冊登記會員
+    </div>
+    <div class="row" ng-show="ev.user_lv_include == 1">
+      <i class="icon " ng-class="ev.check.validUserLv ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 參加者用戶等級需大於{{ev.user_lv_include}}級
+    </div>
+    <div class="row" ng-show="ev.points_include > 0">
+      <i class="icon " ng-class="ev.check.validUserPoints ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 參加者積分需多於{{ev.points_include}}分
+    </div>
+    <div class="row" ng-show="ev.likes_include > 0">
+      <i class="icon " ng-class="ev.check.validLikeCnt ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 參加者好評數需多於{{ev.likes_exclude}}分
+    </div>
+    <div class="row" ng-show="ev.dislike_exclude > 0">
+      <i class="icon " ng-class="ev.check.validDisikeCnt ? 'ion-ios-checkmark' : 'ion-alert-circled'"></i>
+      : 參加者負評數需少於{{ev.dislike_exclude}}分
+    </div>
+    <div class="row">-------------------------------------------</div>
+    <div class="row row-center" ng-click="eventIsRead(ev)">
+      <input type="checkbox" ng-model="ev.cfg.isRead"> : 我已了解
+    </div>
+    
+    <div class="button-bar">
+      <button class="button button-block button-positive" ng-show="!ev.isValidUser" ng-click="showLogin()">註冊登記會員</button>
+      <button class="button button-block button-positive" ng-show="ev.isEnterable && ev.isValidUser" ng-click="enterEvent(ev)">進入此活動</button>
+    </div>
+  </modal-dialog>
+  
+</ion-view>
+
+
